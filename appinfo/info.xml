@@ -17,7 +17,7 @@
 -->
 <info>
 	<id>user_pwauth</id>
-	<name>Unix user backend</name>
+	<name>Unix user and group backend</name>
 	<description>Authenticate Users by PAM</description>
 	<version>2.1</version>
 	<licence>WTFPL</licence>
