@@ -26,6 +26,7 @@
 **/
 
 require_once('apps/user_pwauth/user_pwauth.php');
+require_once('apps/user_pwauth/group_pwauth.php');
 
 OC_APP::registerAdmin('user_pwauth','settings');
 
@@ -33,9 +34,9 @@ OC_APP::registerAdmin('user_pwauth','settings');
 define('OC_USER_BACKEND_PWAUTH_UID_LIST', '1000-1010');
 define('OC_USER_BACKEND_PWAUTH_PATH', '/usr/sbin/pwauth');
 
-
 OC_User::registerBackend('PWAUTH');
 OC_User::useBackend('PWAUTH');
+OC_Group::useBackend(new OC_GROUP_PWAUTH());
 
 // add settings page to navigation
 $entry = array(
