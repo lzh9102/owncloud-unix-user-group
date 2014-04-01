@@ -1,10 +1,6 @@
 <?php
 
-class OC_GROUP_PWAUTH extends BackendUtility implements \OCP\GroupInterface {
-
-	public function __construct(Access $access) {
-		parent::__construct($access);
-	}
+class OC_GROUP_PWAUTH extends OC_Group_Backend implements OC_Group_Interface {
 
 	/**
 	 * @brief is user in group?
@@ -33,8 +29,8 @@ class OC_GROUP_PWAUTH extends BackendUtility implements \OCP\GroupInterface {
 			$limit = null;
 		$groupInfo = posix_getgrnam($gid);
 		if ($groupInfo) {
-			$groupUsers = array_slice($groupInfo["members"], $offset, $limit)
-			return $groupInfo["members"];
+			$groupUsers = array_slice($groupInfo["members"], $offset, $limit);
+			return $groupUsers;
 		} else {
 			return array();
 		}
