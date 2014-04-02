@@ -37,32 +37,34 @@ class OC_USER_PWAUTH extends OC_User_Backend implements OC_User_Interface {
 			if(strpos($entry, "-") === FALSE) {
 				$r[] = $entry;
 			} else {
-				$range = explode("-", $entry); 
-				if($range[0] < 0) { $range[0] = 0; }
-				if($range[1] < $range[0]) { $range[1] = $range[0]; }
-
+				$range = explode("-", $entry);
+				if($range[0] < 0) {
+					$range[0] = 0;
+				}
+				if($range[1] < $range[0]) {
+					$range[1] = $range[0];
+				}
 				for($i = $range[0]; $i <= $range[1]; $i++) {
 					$r[] = $i;
 				}
 			}
 		}
 
-
 		$this->pwauth_uid_list = $r;
 	}
-	
+
 	// those functions are directly inspired by user_ldap
-	
+
 	public function implementsAction($actions) {
 		return (bool)((OC_USER_BACKEND_CHECK_PASSWORD
 			| OC_USER_BACKEND_GET_DISPLAYNAME)
 			& $actions);
 	}
-	
+
 	private function userMatchesFilter($user) {
-                return (strripos($user, $this->user_search) !== false);
-        }
-	
+		return (strripos($user, $this->user_search) !== false);
+	}
+
 	public function deleteUser($_uid) {
 		// Can't delete user
 		OC_Log::write('OC_USER_PWAUTH', 'Not possible to delete local users from web frontend using unix user backend',3);
@@ -71,39 +73,39 @@ class OC_USER_PWAUTH extends OC_User_Backend implements OC_User_Interface {
 
 	public function checkPassword( $uid, $password ) {
 		$uid = strtolower($uid);
-		
+
 		$unix_user = posix_getpwnam($uid);
-		
+
 		// checks if the Unix UID number is allowed to connect
 		if(empty($unix_user)) return false; //user does not exist
 		if(!in_array($unix_user['uid'], $this->pwauth_uid_list)) return false;
-		
-		
+
+
 		$handle = popen($this->pwauth_bin_path, 'w');
-                if ($handle === false) {
+		if ($handle === false) {
 			// Can't open pwauth executable
 			OC_Log::write('OC_USER_PWAUTH', 'Cannot open pwauth executable, check that it is installed on server.',3);
-                        return false;
-                }
- 
-                if (fwrite($handle, "$uid\n$password\n") === false) {
+			return false;
+		}
+
+		if (fwrite($handle, "$uid\n$password\n") === false) {
 			// Can't pipe uid and password
-                        return false;
-                }
- 
-                # Is the password valid?
-	        $result = pclose( $handle );
-                if ($result == 0){
+			return false;
+		}
+
+		# Is the password valid?
+		$result = pclose( $handle );
+		if ($result == 0){
 			return $uid;
 		}
-                return false;
+		return false;
 	}
-	
+
 	public function userExists( $uid ){
 		$user = posix_getpwnam( strtolower($uid) );
 		return is_array($user);
 	}
-	
+
 	/*
 	* this is a tricky one : there is no way to list all users which UID > 1000 directly in PHP
 	* so we just scan all UIDs from $pwauth_min_uid to $pwauth_max_uid
@@ -117,15 +119,15 @@ class OC_USER_PWAUTH extends OC_User_Backend implements OC_User_Interface {
 				$returnArray[] = $array['name'];
 			}
 		}
-		
+
 		$this->user_search = $search;
 		if(!empty($this->user_search)) {
 			$returnArray = array_filter($returnArray, array($this, 'userMatchesFilter'));
-		} 
-	
+		}
+
 		if($limit = -1)
 			$limit = null;
-		
+
 		return array_slice($returnArray, $offset, $limit);
 	}
 
