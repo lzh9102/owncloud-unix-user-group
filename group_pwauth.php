@@ -109,6 +109,9 @@ class OC_GROUP_PWAUTH extends OC_Group_Backend implements OC_Group_Interface {
 		$fields = explode(" ", $output);
 		// fields[0] = <user>, field[1] = ':', field[2] = <group1>, ...
 		// strip fields[0] and fields[1] to get the group array
+		if (count($fields) < 2) { // error
+			return array();
+		}
 		$groups = array_slice($fields, 2);
 		return $groups;
 	}
