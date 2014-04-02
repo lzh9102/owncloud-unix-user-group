@@ -103,9 +103,13 @@ class OC_GROUP_PWAUTH extends OC_Group_Backend implements OC_Group_Interface {
 	 */
 	public function getUserGroups($uid) {
 		// use the command "groups <uid>" to find the groups
-		// the output is a list of group names separated by spaces
+		// the format of output is as follows:
+		// <user> : <group1> <group2> <group3> ...
 		$output = shell_exec("groups " . escapeshellarg($uid));
-		$groups = explode(" ", $output);
+		$fields = explode(" ", $output);
+		// fields[0] = <user>, field[1] = ':', field[2] = <group1>, ...
+		// strip fields[0] and fields[1] to get the group array
+		$groups = array_slice($fields, 2);
 		return $groups;
 	}
 
