@@ -1,4 +1,7 @@
 <?php
+/*
+ * This file was written by Che-Huai Lin and placed in the public domain.
+ */
 
 class OC_GROUP_PWAUTH extends OC_Group_Backend implements OC_Group_Interface {
 
