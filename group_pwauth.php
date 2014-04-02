@@ -20,6 +20,9 @@ class OC_GROUP_PWAUTH extends OC_Group_Backend implements OC_Group_Interface {
 	 * Checks whether the user is member of a group or not.
 	 */
 	public function inGroup($uid, $gid) {
+		if (!$this->user_pwauth->userExists($uid)) {
+			return false;
+		}
 		$groupInfo = posix_getgrnam($gid);
 		if ($group_info) {
 			$groupMembers = $groupInfo["members"];
@@ -101,10 +104,13 @@ class OC_GROUP_PWAUTH extends OC_Group_Backend implements OC_Group_Interface {
 	 * @param $uid Name of the user
 	 * @returns array with group names
 	 *
-	 * This function fetches all groups a user belongs to. It does not check
-	 * if the user exists at all.
+	 * This function fetches all groups a user belongs to. If the user doesn't
+	 * exist, it returns an empty array.
 	 */
 	public function getUserGroups($uid) {
+		if (!$this->user_pwauth->userExists($uid)) {
+			return array();
+		}
 		// use the command "groups <uid>" to find the groups
 		// the format of output is as follows:
 		// <user> : <group1> <group2> <group3> ...
