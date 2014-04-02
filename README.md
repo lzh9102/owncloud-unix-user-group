@@ -3,6 +3,8 @@
 This plugin allows Unix local users to login owncloud with their
 username/password pair.
 
+Tested on OwnCloud 6.0.2.
+
 ## Installation
 
 Copy this directory (`user_pwauth`) to `<owncloud_path>/apps`. Then, login
@@ -29,5 +31,3 @@ The original code is licensed under [WTFPL](http://en.wikipedia.org/wiki/WTFPL).
 My modifications are released to the public domain. See the header of each file
 for information. The authors are not liable for any lost or damage caused by
 using this software.
-
-Tested on OwnCloud 6.0.2.
