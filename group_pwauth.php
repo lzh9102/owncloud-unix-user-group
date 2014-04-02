@@ -2,6 +2,12 @@
 
 class OC_GROUP_PWAUTH extends OC_Group_Backend implements OC_Group_Interface {
 
+	private $user_pwauth;
+
+	public function __construct() {
+		$this->user_pwauth = new OC_USER_PWAUTH();
+	}
+
 	/**
 	 * @brief is user in group?
 	 * @param $uid uid of the user
@@ -47,22 +53,10 @@ class OC_GROUP_PWAUTH extends OC_Group_Backend implements OC_Group_Interface {
 		$groupUsers = $this->usersInGroup($gid, $search, $limit, $offset);
 		$displayNames = array();
 		foreach ($groupUsers as $uid) {
-			$name = $this->getUserDisplyName($uid);
+			$name = $this->user_pwauth->getUserDisplyName($uid);
 			array_push($displayNames, $name);
 		}
 		return $displayNames;
-	}
-
-	private function getUserDisplyName($uid) {
-		$userInfo = posix_getpwnam($user);
-		if (!$userInfo) {
-			return $uid; // cannot find user info, use uid as display name
-		}
-		// gecos is a comma separated list
-		// the first fields (0) is the user's full name
-		$gecos = $user["gecos"];
-		$fields = explode(",", $gecos);
-		return $fields[0];
 	}
 
 	/**
@@ -72,8 +66,7 @@ class OC_GROUP_PWAUTH extends OC_Group_Backend implements OC_Group_Interface {
 	 * Returns a list with all groups
 	 */
 	public function getGroups($search = '', $limit = -1, $offset = 0) {
-		$user_pwauth = new OC_USER_PWAUTH();
-		$users = $user_pwauth->getUsers('', -1, 0);
+		$users = $this->user_pwauth->getUsers('', -1, 0);
 		$allGroups = array();
 		foreach($users as $user) {
 			$groups = $this->getUserGroups($user);
