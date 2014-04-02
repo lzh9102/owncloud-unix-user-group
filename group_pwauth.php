@@ -72,13 +72,19 @@ class OC_GROUP_PWAUTH extends OC_Group_Backend implements OC_Group_Interface {
 	 * Returns a list with all groups
 	 */
 	public function getGroups($search = '', $limit = -1, $offset = 0) {
-		$groups = array();
-		foreach(posix_getgroups() as $posixGroupID) {
-			$groupInfo = posix_getgrgid($posixGroupID);
-			$groupName = $groupInfo["name"];
-			array_push($groups, $groupName);
+		$user_pwauth = new OC_USER_PWAUTH();
+		$users = $user_pwauth->getUsers('', -1, 0);
+		$allGroups = array();
+		foreach($users as $user) {
+			$groups = $this->getUserGroups($user);
+			foreach ($groups as $group) {
+				if ($group != $user) {
+					array_push($allGroups, $group);
+				}
+			}
 		}
-		return $groups;
+		$allGroups = array_unique($allGroups);
+		return array_slice($allGroups, $offset, $limit);
 	}
 
 	public function groupMatchesFilter($group) {
@@ -103,15 +109,10 @@ class OC_GROUP_PWAUTH extends OC_Group_Backend implements OC_Group_Interface {
 	 * if the user exists at all.
 	 */
 	public function getUserGroups($uid) {
-		$groups = array();
-		foreach(posix_getgroups() as $posixGroupID) {
-			$groupInfo = posix_getgrgid($posixGroupID);
-			$groupMembers = $groupInfo["members"];
-			if (in_array($uid, $groupMembers)) {
-				$groupName = $groupInfo["name"];
-				array_push($groups, $groupName);
-			}
-		}
+		// use the command "groups <uid>" to find the groups
+		// the output is a list of group names separated by spaces
+		$output = shell_exec("groups " . escapeshellarg($uid));
+		$groups = explode(" ", $output);
 		return $groups;
 	}
 
